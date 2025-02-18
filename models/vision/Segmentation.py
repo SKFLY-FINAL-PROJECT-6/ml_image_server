@@ -39,7 +39,8 @@ class SegmentationModel:
             raise ValueError(f"Target class '{target_class_name}' not found in the id2label mapping.")
 
         binary_mask = (segmentation == target_class).numpy().astype(np.uint8)
-        #binary_mask_255 = binary_mask * 255
-        return binary_mask
+        binary_mask_255 = binary_mask * 255
+        
+        return binary_mask_255
 
   

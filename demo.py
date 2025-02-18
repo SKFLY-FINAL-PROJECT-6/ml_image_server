@@ -1,8 +1,8 @@
 import streamlit as st
 from PIL import Image
 import torch
-from models.StableDiffusion import StableDiffusionModel
-from models.Segmentation import SegmentationModel
+from models.vision.StableDiffusion import StableDiffusionModel
+from models.vision.Segmentation import SegmentationModel
 from utils.image_utils import cut_image_with_mask, reduce_image_size
 
 

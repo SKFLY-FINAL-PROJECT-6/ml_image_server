@@ -23,11 +23,13 @@ class StableDiffusionModel:
 
     def generate_painting(self, scribble_path, text_prompt: str, wall_image: Image.Image) -> Image.Image:
         wall_width, wall_height = wall_image.size
-
-        if isinstance(scribble_path, Image.Image):
-            scribble_img = scribble_path.convert("L")
-        else:
+        
+        if isinstance(scribble_path, str):
             scribble_img = Image.open(scribble_path).convert("L")
+        elif isinstance(scribble_path, np.ndarray):
+            scribble_img = Image.fromarray(scribble_path).convert("L")
+        else:
+            scribble_img = scribble_path.convert("L")
 
         scribble_img = scribble_img.resize((wall_width, wall_height), Image.LANCZOS)
 

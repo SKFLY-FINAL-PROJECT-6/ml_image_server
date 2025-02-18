@@ -9,7 +9,7 @@ def apply_canny(binary_mask, threshold1=100, threshold2=200):
     return canny_edges
 
 
-def cut_image_with_mask(image_input, mask_input, original_input=None) -> Image.Image:
+def paste_largest_segment(image_input, mask_input, original_input=None) -> Image.Image:
     image = image_input
 
     mask_array = mask_input

@@ -3,9 +3,9 @@ import cv2
 import numpy as np
 
 import torch
-from models.StableDiffusion import StableDiffusionModel
-from models.Segmentation import SegmentationModel
-from utils.image_utils import apply_canny, cut_image_with_mask, reduce_image_size
+from models.vision.StableDiffusion import StableDiffusionModel
+from models.vision.Segmentation import SegmentationModel
+from utils.image_utils import apply_canny, paste_largest_segment, reduce_image_size
 
 
 
@@ -44,11 +44,19 @@ def process_wall_painting(
 
     segmentation = seg_model.segment(image_resized)
 
-    binary_mask = seg_model.get_target_binary_mask(segmentation, target_class_name='wall')
+    binary_mask_255 = seg_model.get_target_binary_mask(segmentation, target_class_name='wall')
 
-    painting = diffuser_model.generate_painting(scribble_path, text_prompt, image_resized)
+    binary_mask_to_canny_edge = apply_canny(binary_mask_255, 100, 200)
 
-    result = cut_image_with_mask(painting, binary_mask, image_resized)
+    # if scribble_path:
+    #     scribble_resized = reduce_image_size(scribble_path, 50)
+    #     #scribble_canny = apply_canny(scribble_resized, 100, 200)
+    #     # Combine the binary mask canny and scribble canny
+    #     #canny_edge_of_binary_mask = cv2.bitwise_and(canny_edge_of_binary_mask, scribble_canny)
+
+    painting = diffuser_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image_resized)
+
+    result = paste_largest_segment(painting, binary_mask_255, image_resized)
 
     return result 
 
@@ -64,7 +72,7 @@ if __name__ == "__main__":
     image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     wall_image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     scribble_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
-    text_prompt = "A beautiful painting of a sunset on a beach"
+    text_prompt = "illustrated painting of a wall with a painting of a cat"
 
 
     result = process_wall_painting(segmentation_model=seg_model, 

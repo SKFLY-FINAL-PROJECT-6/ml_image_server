@@ -321,3 +321,4 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,pycharm+all,jupyternotebooks,git
+binary_mask.png canny_edge_of_binary_mask.png 
