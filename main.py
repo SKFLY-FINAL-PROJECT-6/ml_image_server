@@ -7,6 +7,7 @@ from models.vision.StableDiffusion import StableDiffusionModel
 from models.vision.Segmentation import SegmentationModel
 from utils.image_utils import apply_canny, paste_largest_segment, reduce_image_size
 
+SCALE_PERCENTAGE = 50
 
 
 # Check if CUDA is available. If not, raise an exception.
@@ -40,7 +41,7 @@ def process_wall_painting(
         text_prompt
     ):
 
-    image_resized = reduce_image_size(image_path, 50)
+    image_resized = reduce_image_size(image_path, SCALE_PERCENTAGE)
 
     segmentation = seg_model.segment(image_resized)
 
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     wall_image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     scribble_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
-    text_prompt = "illustrated painting of a wall with a painting of a cat"
+    text_prompt = "draw painting of multiculture"
 
 
     result = process_wall_painting(segmentation_model=seg_model, 
