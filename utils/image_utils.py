@@ -38,6 +38,7 @@ def paste_largest_segment(image_input, mask_input, original_input=None) -> Image
 
     image = image.convert("RGBA")
     mask = mask.convert("L")
+    mask = mask.resize(image.size)
 
     if original is not None:
         original = original.convert("RGBA")

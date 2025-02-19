@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 from models.vision.StableDiffusion import StableDiffusionModel
 from models.vision.Segmentation import SegmentationModel
-from utils.image_utils import cut_image_with_mask, reduce_image_size
+from utils.image_utils import apply_canny, paste_largest_segment, reduce_image_size
 
 
 import warnings
@@ -54,14 +54,28 @@ def main():
             with st.spinner('Generating wall segmentation...'):
                 # Get wall segmentation
                 segmentation = seg_model.segment(image)
-                binary_mask = seg_model.get_target_binary_mask(segmentation, target_class_name='wall')
+                binary_mask_255 = seg_model.get_target_binary_mask(segmentation, target_class_name='wall')
+                binary_mask_to_canny_edge = apply_canny(binary_mask_255, 100, 200)
+            # Display segmentation and edge detection results
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader("Wall Segmentation")
+                st.image(binary_mask_255, caption="Wall Mask")
+            with col2:
+                st.subheader("Edge Detection")
+                st.image(binary_mask_to_canny_edge, caption="Edge Detection Result")
             
             with st.spinner('Generating painting from your prompt...'):
                 # Generate painting
-                painting = diffuser_model.generate_painting(scribble if scribble else image, text_prompt, image)
-                
+                # Add secret prompt to enhance wall painting generation
+                hidden_prompt = f"flat design, bright and friendly mural-style illustration, children's artwork style, {text_prompt}"
+                text_prompt = hidden_prompt
+
+                painting = diffuser_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image)
+                st.subheader("Generated Raw Painting")
+                st.image(painting)
                 # Cut and paste the painting onto the wall using the mask
-                result = cut_image_with_mask(painting, binary_mask, image)
+                result = paste_largest_segment(painting, binary_mask_255, image)
             
             # Display result
             st.subheader("Generated Painting")

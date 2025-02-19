@@ -69,7 +69,7 @@ if __name__ == "__main__":
     diffuser_model = load_diffuser_model_checkpoint(cuda=cuda)
 
 
-    image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
+    image_path = r"C:\Users\013\Desktop\ml_image_server\test_files\pngtree-graphic-depiction-of-an-indoor-space-featuring-a-textured-concrete-wall-image_13805502.png"
     wall_image_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     scribble_path = r"C:\Users\013\Desktop\test\test_image_002.jpg"
     text_prompt = "illustrated painting of a wall with a painting of a cat"
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     result = process_wall_painting(segmentation_model=seg_model, 
                                    image_genrator_model=diffuser_model, 
                                    image_path=image_path, 
-                                   scribble_path=scribble_path, 
+                                   scribble_path=None, 
                                    text_prompt=text_prompt)
 
     result.show()
