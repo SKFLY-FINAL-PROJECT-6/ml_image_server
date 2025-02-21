@@ -68,8 +68,8 @@ def main():
             with st.spinner('Generating painting from your prompt...'):
                 # Generate painting
                 # Add secret prompt to enhance wall painting generation
-                hidden_prompt = f"flat design, bright and friendly mural-style illustration, children's artwork style, {text_prompt}"
-                text_prompt = hidden_prompt
+                # hidden_prompt = f"flat design, bright and friendly mural-style illustration, children's artwork style, {text_prompt}"
+                # text_prompt = hidden_prompt
 
                 painting = diffuser_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image)
                 st.subheader("Generated Raw Painting")
