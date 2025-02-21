@@ -64,3 +64,4 @@ typing_extensions==4.12.2
 urllib3==2.3.0
 wcwidth==0.2.13
 zipp==3.21.0
+ saekdam style, wall painting, flat design
