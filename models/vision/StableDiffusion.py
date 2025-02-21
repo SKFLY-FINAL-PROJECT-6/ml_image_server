@@ -20,21 +20,34 @@ class StableDiffusionModel:
             torch_dtype=torch.float16,
             use_safetensors=True
         ).to("cpu").to(device)
-        
         torch.cuda.empty_cache()
         
         self.pipe = StableDiffusionControlNetPipeline.from_pretrained(
             sd_model_name,
-            controlnet=self.controlnet,
+            controlnet=self.controlnet, 
             torch_dtype=torch.float16,
             use_safetensors=True
         ).to("cpu").to(device)
-
         torch.cuda.empty_cache()
 
-        self.pipe.load_lora_weights(r"C:\Users\013\Desktop\ml_image_server\saekdam", weight_name="saekdam-10.safetensors")
-        self.pipe.load_lora_weights(r"C:\Users\013\Desktop\ml_image_server", weight_name="gru-10.safetensors")
-        
+        self.pipe.safety_checker = None
+        self.pipe.requires_safety_checking = False
+
+        lora_path = r"C:\Users\013\Desktop\ml_image_server\saekdam_style"
+        lora_weights = [
+            "animals-10.safetensors",
+            "nature-10.safetensors", 
+            "play-10.safetensors",
+            "saekdam_ocean-10.safetensors",
+            "urban-10.safetensors",
+            "saekdam_space-10.safetensors",
+            "saekdam-10.safetensors",
+            "gru-10.safetensors"
+        ]
+
+        for weight in lora_weights:
+            self.pipe.load_lora_weights(lora_path, weight_name=weight)
+            
         torch.cuda.empty_cache()
 
 
