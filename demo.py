@@ -35,10 +35,10 @@ def main():
         
         # Process images
         image = Image.open(image_file)
-        image = reduce_image_size(image_file, 50)  # Reduce image size by 50%
+        image = reduce_image_size(image_file, 80)  # Reduce image size by 50%
         scribble = Image.open(scribble_file) if scribble_file else None
         if scribble:
-            scribble = reduce_image_size(scribble_file, 50)  # Reduce scribble size by 50%
+            scribble = reduce_image_size(scribble_file, 80)  # Reduce scribble size by 50%
         
         # Display original images
         col1, col2 = st.columns(2)
