@@ -161,7 +161,7 @@ if __name__ == "__main__":
 
              medium_image = reduce_image_size_to_MEDIUM_SIZE(temp_path)
 
-             prompt_final = prompt_enhanced +", flat design, "+"wall painting, "+ "saekdam style" 
+             prompt_final = prompt_enhanced +", flat design"  
              print(prompt_final)
 
 
