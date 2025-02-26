@@ -1,26 +1,34 @@
+import os
+
 from openai import OpenAI
 
-client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key="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"
-)
+class LLMModel:
+    def __init__(self):
+        self.client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY")
+        )
+        
+        self.system_prompt = {
+            'enhancing': 'You are a prompt engineer. Process the following Korean prompt by translating it into English and extracting key descriptive terms (nouns and adjectives). Only output the extracted words in a single line, separated by commas. Do not include any explanations or translations.',
+            'natural': 'Translate this sentence into English.'
+        }
 
-completion = client.chat.completions.create(
-  extra_headers={
-    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-  },
-  model="deepseek/deepseek-r1:free",
-  messages=[
-    {
-      "role": "system", 
-      "content": "when you get a full setence, you should break it into phrases and alot descrptive words and terms of athomsphere, emotions, and so on. you must add 2D painting style and child's drawing in the phrases generate in only 30 words only"
-    }, 
-    {
-      "role": "user",
-      "content": "generate multicular related pictures"
-    }
-  ]
-)
+    def process_prompt(self, user_prompt: str, mode: str = 'enhancing') -> str:
 
-print(completion.choices[0].message.content)
+        completion = self.client.chat.completions.create(
+            model="mistralai/mistral-7b-instruct",
+            messages=[
+                {
+                    "role": "system",
+                    "content": self.system_prompt[mode]
+                },
+                {
+                    "role": "user", 
+                    "content": user_prompt
+                }
+            ]
+        )
+        
+        return completion.choices[0].message.content
+

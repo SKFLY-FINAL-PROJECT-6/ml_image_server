@@ -1,7 +1,9 @@
 import streamlit as st
 from PIL import Image
 import torch
+
 from models.vision.StableDiffusion import StableDiffusionModel
+from models.vision.StableDiffusionControlNet import StableDiffusionControlNetModel
 from models.vision.Segmentation import SegmentationModel
 from utils.image_utils import apply_canny, paste_largest_segment, reduce_image_size
 
@@ -27,9 +29,14 @@ def main():
         # Load models
         with st.spinner('Loading models...'):
             seg_model = SegmentationModel("nvidia/segformer-b4-finetuned-ade-512-512", cuda)
-            diffuser_model = StableDiffusionModel(
+            diffuser_controlnet_model = StableDiffusionControlNetModel(
                 controlnet_model_name="lllyasviel/control_v11p_sd15_scribble",
                 sd_model_name="runwayml/stable-diffusion-v1-5",
+                device=cuda
+            )
+
+            diffuser_model = StableDiffusionModel(
+                model_name="runwayml/stable-diffusion-v1-5",
                 device=cuda
             )
         
@@ -56,6 +63,10 @@ def main():
                 segmentation = seg_model.segment(image)
                 binary_mask_255 = seg_model.get_target_binary_mask(segmentation, target_class_name='wall')
                 binary_mask_to_canny_edge = apply_canny(binary_mask_255, 100, 200)
+
+            # Save original image and wall mask
+            image.save("original_image.png")
+            Image.fromarray(binary_mask_255).save("wall_mask.png")
             # Display segmentation and edge detection results
             col1, col2 = st.columns(2)
             with col1:
@@ -68,10 +79,12 @@ def main():
             with st.spinner('Generating painting from your prompt...'):
                 # Generate painting
                 # Add secret prompt to enhance wall painting generation
-                # hidden_prompt = f"flat design, bright and friendly mural-style illustration, children's artwork style, {text_prompt}"
-                # text_prompt = hidden_prompt
+                hidden_prompt = f"flat design, saekdam style, wall painting, {text_prompt}"
+                text_prompt = hidden_prompt
 
-                painting = diffuser_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image)
+                #painting = diffuser_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image)
+                painting = diffuser_model.generate_painting(text_prompt)
+
                 st.subheader("Generated Raw Painting")
                 st.image(painting)
                 # Cut and paste the painting onto the wall using the mask
