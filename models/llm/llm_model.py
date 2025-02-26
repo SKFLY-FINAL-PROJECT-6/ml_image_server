@@ -31,3 +31,4 @@ class LLMModel:
         )
         
         return completion.choices[0].message.content
+

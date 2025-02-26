@@ -15,7 +15,6 @@ from models.vision.StableDiffusionControlNet import StableDiffusionControlNetMod
 from models.vision.StableDiffusion import StableDiffusionModel
 from models.vision.Segmentation import SegmentationModel
 from models.llm.llm_model import LLMModel
-
 from utils.image_utils import apply_canny, paste_largest_segment, reduce_image_size_to_MEDIUM_SIZE, cut_image_by_user_input, merge_cropped_image_back
 
 # Check if CUDA is available. If not, raise an exception.
@@ -69,6 +68,9 @@ def process_wall_painting(
         segmentation = segmentation_model.segment(image)
         binary_mask_255 = segmentation_model.get_target_binary_mask(segmentation, target_class_name='wall')
         binary_mask_to_canny_edge = apply_canny(binary_mask_255, 100, 200)
+    image_resized = reduce_image_size(image_path, SCALE_PERCENTAGE)
+
+    segmentation = seg_model.segment(image_resized)
 
         # Generate painting using masked input
         painting = image_genrator_model.generate_painting(binary_mask_to_canny_edge, text_prompt, image)
@@ -82,11 +84,6 @@ def process_wall_painting(
         result = merge_cropped_image_back(image, processed_cropped, x, y, w, h)
 
     return result
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -120,7 +117,6 @@ if __name__ == "__main__":
     }
 
     theme_model_mapping = {key: diffuser_controlnet_models[key] for key in themes}
-
 
 
     while True:
@@ -197,6 +193,7 @@ if __name__ == "__main__":
 
              url_img.close()
              buffer.close()
+
 
 
 
